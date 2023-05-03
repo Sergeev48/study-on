@@ -3,36 +3,42 @@
 {% block title %}Курсы / StudyOn{% endblock %}
 
 {% block body %}
-    <h1>Список курсов</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Описание</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for course in courses %}
-            <tr>
-                <td>
-                    <a href="{{ path('app_course_show', {'id': course.id}) }}">{{ course.name }}</a>
-                </td>
-
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+    {% for course in courses %}
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3">
+            <a class="text-decoration-none" href="{{ path('app_course_show', {'id': course.id}) }}">
+                <span style="-webkit-line-clamp: 1" class="fs-4 hidden-text">{{ course.name }}</span>
+            </a>
+          </div>
+          <div class="card-body"style="height: 220px">
+            <ul class="list-unstyled mt-3 mb-4 text-start">
+              <li></li>
                 {% if course.description %}
-                    <td>{{ course.description }}</td>
+                    <li class="hidden-text" style="-webkit-line-clamp: 6">
+                    {{ course.description }}</li>
                 {% else %}
-                    <td>Курс без описания.</td>
+                    <li>Курс без описания</li>
                 {% endif %}
-
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">Курсы не найдены</td>
-            </tr>
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% else %}
+            <li>Курсы не найдены</li>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
-    <a href="{{ path('app_course_new') }}">Добавить новый курс</a>
+    <a class="btn btn-outline-primary" role="button" href="{{ path('app_course_new') }}">Добавить новый курс</a>
+<style>
+.hidden-text {
+    display: -webkit-box;max-width: 400px;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
+
 {% endblock %}

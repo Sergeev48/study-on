@@ -3,7 +3,9 @@
 {% block title %}{{ 'Создание урока / ' ~ course.name ~ ' / StudyOn' }}{% endblock %}
 
 {% block body %}
+    <h5>Создание урока</h5>
+    <a class="btn btn-outline-primary mb-2" role="button" href="{{ path('app_course_show', {'id': course.id}) }}">Вернуться к курсу</a>
+
     {{ include('lesson/_form.html.twig') }}
 
-    <a href="{{ path('app_course_show', {'id': course.id}) }}">Вернуться к курсу</a>
 {% endblock %}

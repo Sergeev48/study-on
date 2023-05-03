@@ -3,37 +3,46 @@
 {% block title %}{{ course.name ~ ' / StudyOn' }}{% endblock %}
 
 {% block body %}
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Название</th>
-                <td>{{ course.name }}</td>
-            </tr>
-            <tr>
-                <th>Описание</th>
-                <td>{{ course.description }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <h1>{{ course.name }}</h1>
+    <div class="glass-bg p-4">
+    {% if course.description %}
+        <p>{{ course.description }}</p>
+    {% else %}
+        <p>Курс без описания</p>
+    {% endif %}
+    <div class="d-flex">
+        <a class="btn btn-outline-primary mb-2 me-2" role="button" href="{{ path('app_course_edit', {'id': course.id}) }}">Изменить курс</a>
+        {{ include('course/_delete_form.html.twig') }}
+    </div>
+    <h5>Содержание курса</h5>
+    {% for lesson in course.lessons|sort((a, b) => a.number <=> b.number) %}
+        <li style="list-style-type: none;">
+            <a class="text-decoration-none" href="{{ path('app_lesson_show', { 'id' : lesson.id }) }}">
+                {{ lesson.number ~ '. ' ~ lesson.name }}
+            </a>
+        </li>
+    {% else %}
+        <li style="list-style-type: none;">
+            Список уроков пуст
+        </li>
+    {% endfor %}
+    <div class="d-flex">
+        <a class="btn btn-outline-primary mt-2" role="button" href="{{ path('app_lesson_new', {'id': course.id }) }}">Добавить урок</a>
+        <a class="btn btn-outline-primary mt-2 ms-auto" role="button" href="{{ path('app_course_index') }}">Вернуться к курсам</a>
+    </div>
 
-            {% for lesson in course.lessons|sort((a, b) => a.number <=> b.number) %}
-                <li>
-                    <a class="link-secondary lesson" href="{{ path('app_lesson_show', { 'id' : lesson.id }) }}">
-                        {{ lesson.number ~ '. ' ~ lesson.name }}
-                    </a>
-                </li>
-        {% else %}
-            <li>
-                Список уроков пуст
-                <a class="link-info" href="{{ path('app_lesson_new', {'course': course.id }) }}">Добавить</a>
-            </li>
-        {% endfor %}
 
+    </div>
+<style>
+.glass-bg{
+    /* From https://css.glass */
+background: rgba(255, 255, 255, 0.6);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(11.2px);
+-webkit-backdrop-filter: blur(11.2px);
+border: 1px solid rgba(255, 255, 255, 0.16);
+}
+</style>
 
-    <a href="{{ path('app_course_index') }}">Вернуться к курсам</a>
-    <a href="{{ path('app_lesson_new', {'id': course.id }) }}">Добавить урок</a>
-
-    <a href="{{ path('app_course_edit', {'id': course.id}) }}">Изменить</a>
-
-    {{ include('course/_delete_form.html.twig') }}
 {% endblock %}

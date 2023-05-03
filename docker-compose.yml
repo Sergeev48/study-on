@@ -14,6 +14,8 @@ services:
     links:
       - php
   postgres:
+    ports: #Нельзя использовать проброс портов на реальном проекте
+      - '127.0.0.1:5433:5432'
     image: postgres:alpine
     volumes:
       - postgres:/var/lib/postgresql/data

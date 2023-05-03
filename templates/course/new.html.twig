@@ -3,7 +3,9 @@
 {% block title %}Новый курс{% endblock %}
 
 {% block body %}
+    <h5>Создание курса</h5>
+    <a class="btn btn-outline-primary mb-2" role="button" href="{{ path('app_course_index') }}">Вернуться к курсам</a>
+
     {{ include('course/_form.html.twig') }}
 
-    <a href="{{ path('app_course_index') }}">Вернуться к курсам</a>
 {% endblock %}
