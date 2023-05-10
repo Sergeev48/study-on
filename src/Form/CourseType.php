@@ -18,6 +18,8 @@ class CourseType extends AbstractType
         $builder
             ->add('code', TextType::class, [
                 'label' => 'Символьный код',
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Символьный код не может быть пустым'),
                     new Length(max: 255, maxMessage: 'Символьный код должен быть не более 255 символов')
@@ -25,6 +27,8 @@ class CourseType extends AbstractType
             ])
             ->add('name', TextType::class, [
                 'label' => 'Название',
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Название не может быть пустым'),
                     new Length(max: 255, maxMessage: 'Название должно быть не более 255 символов')

@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 #[UniqueEntity(fields: "code", message: "Такой символьный код уже существует")]
-
 class Course
 {
     #[ORM\Id]

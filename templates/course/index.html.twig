@@ -5,40 +5,41 @@
 {% block body %}
 
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-    {% for course in courses %}
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
-          <div class="card-header py-3">
-            <a class="text-decoration-none" href="{{ path('app_course_show', {'id': course.id}) }}">
-                <span style="-webkit-line-clamp: 1" class="fs-4 hidden-text">{{ course.name }}</span>
-            </a>
-          </div>
-          <div class="card-body"style="height: 220px">
-            <ul class="list-unstyled mt-3 mb-4 text-start">
-              <li></li>
-                {% if course.description %}
-                    <li class="hidden-text" style="-webkit-line-clamp: 6">
-                    {{ course.description }}</li>
-                {% else %}
-                    <li>Курс без описания</li>
-                {% endif %}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {% else %}
+        {% for course in courses %}
+            <div class="col courses">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <a class="text-decoration-none course-show" href="{{ path('app_course_show', {'id': course.id}) }}">
+                            <span style="-webkit-line-clamp: 1" class="fs-4 hidden-text">{{ course.name }}</span>
+                        </a>
+                    </div>
+                    <div class="card-body" style="height: 220px">
+                        <ul class="list-unstyled mt-3 mb-4 text-start">
+                            <li></li>
+                            {% if course.description %}
+                                <li class="hidden-text" style="-webkit-line-clamp: 6">
+                                    {{ course.description }}</li>
+                            {% else %}
+                                <li>Курс без описания</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% else %}
             <li>Курсы не найдены</li>
         {% endfor %}
     </div>
 
     <a class="btn btn-outline-primary" role="button" href="{{ path('app_course_new') }}">Добавить новый курс</a>
-<style>
-.hidden-text {
-    display: -webkit-box;max-width: 400px;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-</style>
+    <style>
+        .hidden-text {
+            display: -webkit-box;
+            max-width: 400px;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 
 {% endblock %}

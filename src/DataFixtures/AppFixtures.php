@@ -11,7 +11,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $course_1  = new Course();
+        $course_1 = new Course();
         $course_1
             ->setCode('Python-1')
             ->setName('Python с нуля')
@@ -38,7 +38,7 @@ class AppFixtures extends Fixture
             ->setNumber(3);
         $course_1->addLesson($lesson);
 
-        $course_2  = new Course();
+        $course_2 = new Course();
         $course_2
             ->setCode('Java-1')
             ->setName('Java-разработчик')
@@ -65,7 +65,7 @@ class AppFixtures extends Fixture
             ->setNumber(3);
         $course_2->addLesson($lesson);
 
-        $course_3  = new Course();
+        $course_3 = new Course();
         $course_3
             ->setCode('SQL-1')
             ->setName('SQL-разработчик')

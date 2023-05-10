@@ -29,19 +29,25 @@ class LessonType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Название',
-                'constraints' => [
+                'required' => true,
+                'empty_data' => '',
+    'constraints' => [
                     new NotBlank(message: 'Название не может быть пустым'),
                     new Length(max: 255, maxMessage: 'Название урока должно быть не более 255 символов'),
                 ],
             ])
             ->add('content', TextareaType::class, [
                 'label' => 'Содержимое урока',
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Содержимое урока не может быть пустым'),
                 ],
             ])
             ->add('number', NumberType::class, [
                 'label' => 'Порядковый номер урока',
+                'required' => true,
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Порядковый номер урока не может быть пустым'),
                     new Range(
