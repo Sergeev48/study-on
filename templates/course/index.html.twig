@@ -9,7 +9,8 @@
             <div class="col courses">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <a class="text-decoration-none course-show" href="{{ path('app_course_show', {'id': course.id}) }}">
+                        <a class="text-decoration-none course-show"
+                           href="{{ path('app_course_show', {'id': course.id}) }}">
                             <span style="-webkit-line-clamp: 1" class="fs-4 hidden-text">{{ course.name }}</span>
                         </a>
                     </div>
