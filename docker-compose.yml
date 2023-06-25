@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.6'
 volumes:
   postgres: ~
 services:
@@ -42,3 +42,7 @@ services:
     volumes:
       - ${PWD}:/app
       - ${HOME}/.yarn:/yarn
+networks:
+  default:
+    name: study-onbilling_default
+    external: true

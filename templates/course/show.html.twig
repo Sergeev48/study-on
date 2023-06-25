@@ -10,11 +10,14 @@
         {% else %}
             <p class="course-description">Курс без описания</p>
         {% endif %}
-        <div class="d-flex">
-            <a class="btn btn-outline-primary mb-2 me-2" role="button"
-               href="{{ path('app_course_edit', {'id': course.id}) }}">Изменить курс</a>
-            {{ include('course/_delete_form.html.twig') }}
-        </div>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <div class="d-flex">
+                <a class="btn btn-outline-primary mb-2 me-2" role="button"
+                   href="{{ path('app_course_edit', {'id': course.id}) }}">Изменить курс</a>
+                {{ include('course/_delete_form.html.twig') }}
+            </div>
+        {% endif %}
+
         <h5>Содержание курса</h5>
         {% for lesson in course.lessons|sort((a, b) => a.number <=> b.number) %}
             <li style="list-style-type: none;">
@@ -28,8 +31,10 @@
             </li>
         {% endfor %}
         <div class="d-flex">
-            <a class="btn btn-outline-primary mt-2" role="button"
-               href="{{ path('app_lesson_new', {'id': course.id }) }}">Добавить урок</a>
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a class="btn btn-outline-primary mt-2" role="button"
+                   href="{{ path('app_lesson_new', {'id': course.id }) }}">Добавить урок</a>
+            {% endif %}
             <a class="btn btn-outline-primary mt-2 ms-auto" role="button" href="{{ path('app_course_index') }}">Вернуться
                 к курсам</a>
         </div>

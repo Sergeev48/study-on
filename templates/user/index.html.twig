@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block body %}
+    <div class="container">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ user.email }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Роль</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {% if user.roles[0] == 'ROLE_USER' %}
+                            Пользователь
+                        {% elseif user.roles[0] == 'ROLE_SUPER_ADMIN' %}
+                            Администратор
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Баланс</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ balance }}                    </div>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

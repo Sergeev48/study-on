@@ -31,8 +31,10 @@
             <li>Курсы не найдены</li>
         {% endfor %}
     </div>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a class="btn btn-outline-primary" role="button" href="{{ path('app_course_new') }}">Добавить новый курс</a>
+    {% endif %}
 
-    <a class="btn btn-outline-primary" role="button" href="{{ path('app_course_new') }}">Добавить новый курс</a>
     <style>
         .hidden-text {
             display: -webkit-box;
