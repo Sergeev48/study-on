@@ -4,16 +4,27 @@ namespace App\Security;
 
 use App\Exception\BillingException;
 use App\Exception\BillingUnavailableException;
+use App\Service\BillingClient;
 use DateTime;
+use PHPUnit\Util\Exception;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use JsonException;
+
 
 class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
 {
+
+    private BillingClient $billingClient;
+
+    public function __construct(BillingClient $billingClient)
+    {
+        $this->billingClient = $billingClient;
+    }
     /**
      * Symfony calls this method if you use features like switch_user
      * or remember_me.
@@ -46,6 +57,7 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
      *
      * If your firewall is "stateless: true" (for a pure API), this
      * method is not called.
+     * @throws JsonException
      */
     public function refreshUser(UserInterface $user): UserInterface
     {
@@ -56,6 +68,19 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
         $exp = $user->getExp();
         $time = (new DateTime())->add(new \DateInterval('PT5M'));
 
+        if ($exp < $time) {
+            $refreshToken = json_encode([
+                'refresh_token' => $user->getRefreshToken(),
+            ], JSON_THROW_ON_ERROR);
+            try {
+                $response = $this->billingClient->refresh($refreshToken);
+            } catch (BillingUnavailableException|JsonException $e) {
+                throw new Exception('Произошла ошибка: ' . $e->getMessage());
+            }
+            $user->setToken($response['token']);
+            $user->decodeToken();
+            return $user;
+        }
         return $user;
     }
 

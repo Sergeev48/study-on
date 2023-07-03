@@ -60,6 +60,26 @@ class User implements UserInterface
         return $this;
     }
 
+    private ?string $refresh_token;
+
+    /**
+     * @return string|null
+     */
+    public function getRefreshToken(): ?string
+    {
+        return $this->refresh_token;
+    }
+
+    /**
+     * @param string|null $refresh_token
+     */
+    public function setRefreshToken(?string $refresh_token): self
+    {
+        $this->refresh_token = $refresh_token;
+
+        return $this;
+    }
+
     private array $roles = [];
 
     public function getEmail(): ?string

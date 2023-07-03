@@ -29,13 +29,18 @@ class BillingAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
 
+    private BillingClient $billingClient;
+
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, BillingClient $billingClient)
     {
+        $this->billingClient = $billingClient;
     }
 
     /**
+     * @param Request $request
+     * @return SelfValidatingPassport
      */
     public function authenticate(Request $request): SelfValidatingPassport
     {
@@ -51,15 +56,16 @@ class BillingAuthenticator extends AbstractLoginFormAuthenticator
             return new SelfValidatingPassport(
                 new UserBadge($credentials, function ($credentials) {
                     try {
-                        $response = BillingClient::getToken($_ENV['BILLING_SERVER'], $credentials, false);
+                        $response = $this->billingClient->auth($credentials);
                     } catch (BillingUnavailableException|JsonException $e) {
                         throw new Exception('Произошла ошибка во время авторизации: ' . $e->getMessage());
                     }
                     if (isset($response['code'])) {
-                        throw new BillingException('Ошибка авторизации. Проверьте правильность данных!', 401);
+                        throw new CustomUserMessageAuthenticationException('Ошибка авторизации. Проверьте правильность данных!');
                     }
                     $user = new User();
                     $user->setToken($response['token']);
+                    $user->setRefreshToken($response['refresh_token']);
                     $user->decodeToken();
                     return $user;
                 }),

@@ -25,6 +25,15 @@
                             {% endif %}
                         </ul>
                     </div>
+                    {% if is_granted('ROLE_USER') %}
+                        {% if transactions[course.code] is defined and transactions[course.code] is not empty  %}
+                            {% if transactions[course.code]['type'] == 'buy' %}
+                                <h6 class="card-subtitle mb-2 text-success h3">Курс куплен</h6>
+                            {% elseif transactions[course.code]['type'] == 'rent' %}
+                                <h6 class="card-subtitle mb-2 text-success h3">Курс аредован до {{ transactions[course.code]['expires_at']|date }}</h6>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         {% else %}
