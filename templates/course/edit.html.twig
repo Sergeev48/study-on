@@ -1,12 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'Изменение курса ' ~ course.name ~ ' / StudyOn' }}{% endblock %}
+{% block title %}{{ 'Изменение курса ' ~ course.title ~ ' / StudyOn' }}{% endblock %}
 
 {% block body %}
     <h5>Редактирование курса</h5>
     <div class="d-flex">
         {{ include('course/_delete_form.html.twig') }}
-        <a class="btn btn-outline-primary ms-2" role="button" href="{{ path('app_course_show', {'id': course.id}) }}">Вернуться
+        <a class="form-button nav-link text-light ms-2" style="width: 185px;display: block;text-align:center;"
+           role="button" href="{{ path('app_course_show', {'id': course.id}) }}">Вернуться
             к курсу</a>
     </div>
     {{ include('course/_form.html.twig', {'button_label': 'Сохранить изменения'}) }}

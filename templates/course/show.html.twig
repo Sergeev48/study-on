@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ course.name ~ ' / StudyOn' }}{% endblock %}
+{% block title %}{{ course.title ~ ' / StudyOn' }}{% endblock %}
 
 {% block body %}
     <head>
@@ -11,7 +11,17 @@
                 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
                 crossorigin="anonymous"></script>
     </head>
-    <h1 class="course-name">{{ course.name }}</h1>
+    {% for message in app.flashes('success') %}
+        <div class="mt-2 alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="mt-2 alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h1 class="course-title">{{ course.title }}</h1>
     <div class="glass-bg p-4">
         {% if course.description %}
             <p class="course-description">{{ course.description }}</p>
@@ -20,7 +30,8 @@
         {% endif %}
         {% if is_granted('ROLE_SUPER_ADMIN') %}
             <div class="d-flex">
-                <a class="btn btn-outline-primary mb-2 me-2" role="button"
+                <a class="form-button nav-link text-light mb-2 me-2"
+                   style="width: 185px;display: block;text-align: center;" role="button"
                    href="{{ path('app_course_edit', {'id': course.id}) }}">Изменить курс</a>
                 {{ include('course/_delete_form.html.twig') }}
             </div>
@@ -30,12 +41,13 @@
         {% for lesson in course.lessons|sort((a, b) => a.number <=> b.number) %}
             <li style="list-style-type: none;">
                 {% if owned == true %}
-                    <a class="text-decoration-none lesson" href="{{ path('app_lesson_show', { 'id' : lesson.id }) }}">
+                    <a class="text-decoration-none lesson" style="color:#4E54C8FF"
+                       href="{{ path('app_lesson_show', { 'id' : lesson.id }) }}">
                         {{ lesson.number ~ '. ' ~ lesson.name }}
                     </a>
                 {% endif %}
                 {% if owned == false %}
-                    <a class="text-decoration-none lesson disabled" href="#">
+                    <a class="text-decoration-none lesson disabled " style="color:#4E54C8FF" href="#">
                         {{ lesson.number ~ '. ' ~ lesson.name }}
                     </a>
                 {% endif %}
@@ -47,14 +59,17 @@
         {% endfor %}
         <div class="d-flex">
             {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a class="btn btn-outline-primary mt-2" role="button"
+                <a class="form-button nav-link text-light mt-2" style="width: 185px;display: block;text-align: center;"
+                   role="button"
                    href="{{ path('app_lesson_new', {'id': course.id }) }}">Добавить урок</a>
             {% endif %}
-            <a class="btn btn-outline-primary mt-2 ms-auto" role="button" href="{{ path('app_course_index') }}">Вернуться
+            <a class="form-button nav-link text-light mt-2 ms-auto"
+               style="width: 185px;display: block;text-align:center;" role="button"
+               href="{{ path('app_course_index') }}">Вернуться
                 к курсам</a>
-            {% if owned == false and disabled == false%}
-                <a class="btn-outline-success btn mt-2 ms-2 " type="button" data-bs-toggle="modal"
-                   data-bs-target="#exampleModal">Купить курс</a>
+            {% if owned == false and disabled == false %}
+                <a class="form-button nav-link text-light mt-2 ms-2 " style="width: 140px; display: inline; text-align: center" type="button" data-bs-toggle="modal"
+                   data-bs-target="#exampleModal" id="modalButton">Купить курс</a>
                 <!-- Modal -->
                 <div class="modal" data-backdrop="false" id="exampleModal" tabindex="-1"
                      aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -69,9 +84,11 @@
                                 Вы уверены, что хотите приобрести этот курс?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                <button type="button" class="form-button del" style="width: 125px; display: inline" data-bs-dismiss="modal"
+                                        aria-label="Close">Закрыть
+                                </button>
                                 <form action="{{ path('app_course_buy', {'id': course.id}) }}" method="POST">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="form-button" style="width: 245px; display: inline">
                                         Приобрести доступ к курсу
                                     </button>
                                 </form>
@@ -79,8 +96,8 @@
                         </div>
                     </div>
                 </div>
-            {% else %}
-                <a class="btn-outline-secondary btn mt-2 ms-2 disabled" type="button">Купить курс</a>
+            {% elseif owned == false and disabled == true %}
+                <a class="form-button nav-link text-light mt-2 ms-2 disabled" style="width: 140px; display: inline; text-align: center" type="button">Купить курс</a>
             {% endif %}
         </div>
 

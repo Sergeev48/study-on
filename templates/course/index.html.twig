@@ -10,27 +10,48 @@
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
                         <a class="text-decoration-none course-show"
-                           href="{{ path('app_course_show', {'id': course.id}) }}">
-                            <span style="-webkit-line-clamp: 1" class="fs-4 hidden-text">{{ course.name }}</span>
+                           href="{{ path('app_course_show', {'id': course.content.id}) }}">
+                            <span style="-webkit-line-clamp: 1; color: #4E54C8FF"
+                                  class="fs-4 hidden-text">{{ course.content.title }}</span>
                         </a>
                     </div>
                     <div class="card-body" style="height: 220px">
                         <ul class="list-unstyled mt-3 mb-4 text-start">
                             <li></li>
-                            {% if course.description %}
+                            {% if course.content.description %}
                                 <li class="hidden-text" style="-webkit-line-clamp: 6">
-                                    {{ course.description }}</li>
+                                    {{ course.content.description }}</li>
                             {% else %}
                                 <li>Курс без описания</li>
                             {% endif %}
                         </ul>
                     </div>
                     {% if is_granted('ROLE_USER') %}
-                        {% if transactions[course.code] is defined and transactions[course.code] is not empty  %}
-                            {% if transactions[course.code]['type'] == 'buy' %}
-                                <h6 class="card-subtitle mb-2 text-success h3">Курс куплен</h6>
-                            {% elseif transactions[course.code]['type'] == 'rent' %}
-                                <h6 class="card-subtitle mb-2 text-success h3">Курс аредован до {{ transactions[course.code]['expires_at']|date }}</h6>
+                        {% if transactions[course.content.code] is defined and transactions[course.content.code] is not empty %}
+                            {% if transactions[course.content.code]['type'] == 'buy' %}
+                                <div class="card-header py-2">
+                                    <span class="fs-6 ">Курс куплен</span>
+                                </div>
+                            {% elseif transactions[course.content.code]['type'] == 'rent' %}
+                                <div class="card-header py-2">
+                                    <span class="fs-6 ">Курс аредован до {{ transactions[course.content.code]['expires_at']|date }}</span>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            {% if course.type == 'free' %}
+                                <div class="card-header py-2">
+                                    <span class="fs-6 ">Курс бесплатный</span>
+                                </div>
+                            {% else %}
+                                {% if course.type == 'rent' %}
+                                    <div class="card-header py-2">
+                                        <span class="fs-6 ">Цена аренды: {{ course.price }}</span>
+                                    </div>
+                                {% elseif course.type == 'buy' %}
+                                    <div class="card-header py-2">
+                                        <span class="fs-6 ">Цена покупки: {{ course.price }}</span>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -41,7 +62,8 @@
         {% endfor %}
     </div>
     {% if is_granted('ROLE_SUPER_ADMIN') %}
-        <a class="btn btn-outline-primary" role="button" href="{{ path('app_course_new') }}">Добавить новый курс</a>
+        <a class="form-button nav-link text-light" role="button" style="width: 250px; display: inline" href="{{ path('app_course_new') }}">Добавить новый курс</a>
+
     {% endif %}
 
     <style>

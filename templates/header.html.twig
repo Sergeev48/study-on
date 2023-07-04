@@ -1,18 +1,26 @@
-<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-        <span class="fs-4">Какое-то название</span>
+<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom ">
+    <div class="container d-flex">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-light text-decoration-none">
+        <span class="fs-4">Study-On</span>
     </a>
 
     <ul class="nav nav-pills">
-        <li class="nav-item"><a href="#" class="nav-link" aria-current="page">Что-то</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">Что-то</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">Что-то</a></li>
+        <li class="nav-item"><a href="/" class="nav-link text-light">Главная</a></li>
+        <li class="nav-item"><a href="#" class="nav-link text-light">О нас</a></li>
+        <li class="nav-item"><a href="#" class="nav-link text-light">Контакты</a></li>
         {% if is_granted('ROLE_USER') %}
-            <li class="nav-item"><a href="{{ path('app_user_profile') }}" class="nav-link">Профиль</a></li>
-            <li class="nav-item"><a href="{{ path('app_logout') }}" class="nav-link">Выйти</a></li>
+            <li class="nav-item"><a href="{{ path('app_user_profile') }}" class="nav-link text-light">Профиль</a></li>
+            <li class="nav-item"><a href="{{ path('app_logout') }}" class="nav-link text-light">Выйти</a></li>
         {% else %}
-            <li class="nav-item"><a href="{{ path('app_registration') }}" class="nav-link">Регистрация</a></li>
-            <li class="nav-item"><a href="{{ path('app_login') }}" class="nav-link">Войти</a></li>
+            <li class="nav-item"><a href="{{ path('app_registration') }}" class="nav-link text-light">Регистрация</a></li>
+            <li class="nav-item"><a href="{{ path('app_login') }}" class="nav-link text-light">Войти</a></li>
         {% endif %}
     </ul>
+    </div>
 </header>
+<style>
+    header{
+        background: linear-gradient(60deg, rgb(78, 84, 200) 0%, rgb(143, 148, 251) 100%);
+        color:white;
+    }
+</style>

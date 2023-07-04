@@ -7,30 +7,28 @@
         {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
-
-
-        <h1 class="h3 mb-3 font-weight-normal">Пожалуйста, войдите</h1>
-        <label for="inputEmail">Электронная почта</label>
-        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-        <label for="inputPassword">Пароль</label>
-        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-        <input type="hidden" name="_csrf_token"
-               value="{{ csrf_token('authenticate') }}"
-        >
-
-        {#
-        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-        See https://symfony.com/doc/current/security/remember_me.html
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" name="_remember_me"> Remember me
-            </label>
+        <div class="login-page">
+            <div class="form">
+                <form class="login-form">
+                    <h1>Авторизация</h1>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email"
+                           required autofocus class="info form-control" placeholder="Электронная почта"/>
+                    <input type="password" name="password" id="inputPassword" autocomplete="current-password" required
+                           class="info form-control" placeholder="Пароль"/>
+                    <div class="checkbox info" style="background: none">
+                        <label class="d-flex">
+                            <input class="me-2" type="checkbox" name="_remember_me"> Запомнить меня
+                        </label>
+                    </div>
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+                    <button class="form-button" type="submit">ВОЙТИ</button>
+                    <p class="message">Еще не зарегистрированы? <a href="{{ path('app_registration') }}">Создать аккаунт</a></p>
+                </form>
+            </div>
         </div>
-        #}
-
-        <button class="btn btn-lg btn-primary m-1" type="submit">
-            Войти
-        </button>
     </form>
+    <style>
+    </style>
 {% endblock %}

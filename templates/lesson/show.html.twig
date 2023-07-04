@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ lesson.name ~ ' / ' ~ lesson.course.name ~ ' / StudyOn' }}{% endblock %}
+{% block title %}{{ lesson.name ~ ' / ' ~ lesson.course.title ~ ' / StudyOn' }}{% endblock %}
 
 {% block body %}
 
@@ -8,15 +8,19 @@
     <div class="glass-bg p-4">
         <p class="lesson-content">{{ lesson.content }}</p>
         {% if is_granted('ROLE_SUPER_ADMIN') %}
-        <div class="d-flex">
-            <a class="btn btn-outline-primary mb-2 me-2" role="button"
-               href="{{ path('app_lesson_edit', {'id': lesson.id}) }}">Изменить урок</a>
-            {{ include('lesson/_delete_form.html.twig') }}
-        </div>
+            <div class="d-flex">
+                <a class="form-button nav-link text-light mb-2 me-2"
+                   style="width: 185px;display: block;text-align: center;" role="button"
+                   href="{{ path('app_lesson_edit', {'id': lesson.id}) }}">Изменить урок</a>
+                {{ include('lesson/_delete_form.html.twig') }}
+            </div>
         {% endif %}
 
 
-        <a class="btn btn-outline-primary mt-2 ms-auto" role="button" href="{{ path('app_course_show', {'id': lesson.course.id}) }}">Вернуться к курсу</a>
+        <a class="form-button nav-link text-light mt-2 ms-auto"
+           style="width: 185px;display: block;text-align:center;"
+           role="button"
+           href="{{ path('app_course_show', {'id': lesson.course.id}) }}">Вернуться к курсу</a>
 
     </div>
     <style>

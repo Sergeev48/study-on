@@ -10,12 +10,16 @@ use App\Form\LessonType;
 use App\Repository\CourseRepository;
 use App\Repository\LessonRepository;
 use App\Service\BillingClient;
+use App\Utils\ResponseParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Security\User;
+use Exception;
+use JsonException;
 
 #[Route('/courses')]
 class CourseController extends AbstractController
@@ -23,14 +27,20 @@ class CourseController extends AbstractController
     private CourseRepository $courseRepository;
     private BillingClient $billingClient;
     private LessonRepository $lessonRepository;
+    private ResponseParser $responseParser;
 
 
-    public function __construct(CourseRepository $courseRepository, BillingClient $billingClient, LessonRepository $lessonRepository,
+    public function __construct(
+        CourseRepository $courseRepository,
+        BillingClient    $billingClient,
+        LessonRepository $lessonRepository,
+        ResponseParser   $responseParser
     )
     {
         $this->courseRepository = $courseRepository;
         $this->billingClient = $billingClient;
         $this->lessonRepository = $lessonRepository;
+        $this->responseParser = $responseParser;
     }
 
     /**
@@ -42,27 +52,27 @@ class CourseController extends AbstractController
     {
         $courses = $this->courseRepository->findAll();
         $transactions = [];
+
+        $courseResponse = $this->billingClient->getCourses();
+        $coursesArray = $this->responseParser->parseCourses($courseResponse, $courses);
+
         if ($this->getUser() !== null) {
             $user = $this->getUser();
-            $response = $this->billingClient->getTransactions(
+            $transactionResponse = $this->billingClient->getTransactions(
                 $user->getToken(),
                 ['skip_expired' => true, 'type' => 'payment']
             );
-            foreach ($response as $item) {
-                if (isset($item['expires_at'])) {
-                    $transactions[$item['course_code']]['type'] = 'rent';
-                    $transactions[$item['course_code']]['expires_at'] = $item['expires_at'];
-                } else {
-                    $transactions[$item['course_code']]['type'] = 'buy';
-                }
-            }
+            $transactions = $this->responseParser->parseTransactions($transactionResponse);
         }
         return $this->render('course/index.html.twig', [
-            'courses' => $courses,
+            'courses' => $coursesArray,
             'transactions' => $transactions
         ]);
     }
 
+    /**
+     * @throws \JsonException
+     */
     #[IsGranted('ROLE_SUPER_ADMIN')]
     #[Route('/new', name: 'app_course_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -72,13 +82,34 @@ class CourseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->courseRepository->save($course, true);
+            $postFields = json_encode([
+                'type' => $form->get('type')->getData(),
+                'title' => $form->get('title')->getData(),
+                'code' => $form->get('code')->getData(),
+                'price' => $form->get('price')->getData(),
+            ], JSON_THROW_ON_ERROR);
 
-            return $this->redirectToRoute(
-                'app_course_show',
-                ['id' => $course->getId()],
-                Response::HTTP_SEE_OTHER
-            );
+            try {
+                $response = $this->billingClient->addCourse(
+                    $this->getUser()->getToken(),
+                    $postFields
+                );
+            } catch (BillingUnavailableException|JsonException $e) {
+                throw new \RuntimeException('Произошла ошибка во добавления курса: ' . $e->getMessage());
+            }
+            if (isset($response['code'])) {
+                if (isset($response['message'])) {
+                    $form->addError(new FormError($response['message']));
+                }
+                if (isset($response['errors'])) {
+                    foreach ($response['errors'] as $error) {
+                        $form->addError(new FormError($error));
+                    }
+                }
+            } elseif (isset($response['success'])) {
+                $this->courseRepository->save($course, true);
+                return $this->redirectToRoute('app_course_show', ['id' => $course->getId()], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->renderForm('course/new.html.twig', [
@@ -87,6 +118,10 @@ class CourseController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws BillingUnavailableException
+     * @throws \JsonException
+     */
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
     public function show(Course $course, Request $request): Response
     {
@@ -106,9 +141,17 @@ class CourseController extends AbstractController
                     if (isset($transactions[0])) {
                         $owned = true;
                     } else {
-                        $currentUser = $this->billingClient->getBillingUser($user->getToken());
-                        if ($currentUser['balance'] >= $courseBilling['price']) {
-                            $disabled = false;
+                        $transactions = $this->billingClient->getTransactions(
+                            $user->getToken(),
+                            ['skip_expired' => true, 'course_code' => $course->getCode()]
+                        );
+                        if (isset($transactions[0])) {
+                            $owned = true;
+                        } else {
+                            $currentUser = $this->billingClient->getBillingUser($user->getToken());
+                            if ($currentUser['balance'] >= $courseBilling['price']) {
+                                $disabled = false;
+                            }
                         }
                     }
                 }
@@ -124,21 +167,54 @@ class CourseController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws \JsonException
+     * @throws Exception
+     */
     #[IsGranted('ROLE_SUPER_ADMIN')]
     #[Route('/{id}/edit', name: 'app_course_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Course $course): Response
     {
+        $courseBilling = $this->billingClient->getCourse($course->getCode());
+
         $form = $this->createForm(CourseType::class, $course);
+        $form->get('type')->setData($courseBilling['type']);
+        if (isset($courseBilling['price'])) {
+            $form->get('price')->setData($courseBilling['price']);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->courseRepository->save($course, true);
+            $postFields = json_encode([
+                'type' => $form->get('type')->getData(),
+                'title' => $form->get('title')->getData(),
+                'code' => $form->get('code')->getData(),
+                'price' => $form->get('price')->getData(),
+            ], JSON_THROW_ON_ERROR);
 
-            return $this->redirectToRoute(
-                'app_course_show',
-                ['id' => $course->getId()],
-                Response::HTTP_SEE_OTHER
-            );
+            try {
+                $response = $this->billingClient->editCourse(
+                    $this->getUser()->getToken(),
+                    $postFields,
+                    $course->getCode()
+                );
+            } catch (BillingUnavailableException|JsonException $e) {
+                throw new \RuntimeException('Произошла ошибка во добавления курса: ' . $e->getMessage());
+            }
+            if (isset($response['code'])) {
+                if (isset($response['errors'])) {
+                    foreach ($response['errors'] as $error) {
+                        $form->addError(new FormError($error));
+                    }
+                }
+                if (isset($response['message'])) {
+                    $form->addError(new FormError($response['message']));
+                }
+            } else {
+                $this->courseRepository->save($course, true);
+                return $this->redirectToRoute('app_course_show', ['id' => $course->getId()], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->renderForm('course/edit.html.twig', [
@@ -197,8 +273,12 @@ class CourseController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         try {
-            $this->billingClient->buyCourse($user->getToken(), $course->getCode());
-            $this->addFlash('success', 'Курс успешно оплачен');
+            $response = $this->billingClient->buyCourse($user->getToken(), $course->getCode());
+            if (isset($response['code'])) {
+                $this->addFlash('error', $response['message']);
+            } else {
+                $this->addFlash('success', 'Курс успешно оплачен');
+            }
         } catch (BillingUnavailableException|\Exception $e) {
             $this->addFlash('error', $e->getMessage());
         }

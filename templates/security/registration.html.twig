@@ -4,19 +4,30 @@
 
 {% block body %}
     <div class="container">
-        <h1>Регистрация</h1>
+        <div class="login-page" style="padding: 5% 0 0">
+            <div class="form">
+                <div class="login-form">
+                    <h1>Регистрация</h1>
 
-        {{ form_start(registrationForm) }}
-        {{ form_widget(registrationForm.email) }}
-        {{ form_errors(registrationForm.email) }}
-        {{ form_widget(registrationForm.password) }}
+                    {{ form_start(registrationForm) }}
+                    {{ form_widget(registrationForm.email) }}
+                    {{ form_errors(registrationForm.email) }}
+                    {{ form_widget(registrationForm.password) }}
+                    {{ form_errors(registrationForm) }}
+                    <div class="info m-0 pb-0" style="background: none">
 
-        {{ form_errors(registrationForm) }}
+                        {{ form_widget(registrationForm.agreeTerms) }}
+                        <label for="registration_form_agreeTerms" class="">Согласие на обработку
+                            данных</label>
+                    </div>
 
-        <label for="registration_form_agreeTerms" class="mb-2 mt-2">Согласие на обработку персональных данных</label>
-        {{ form_widget(registrationForm.agreeTerms) }}
-        <br>
-        <button type="submit" class="btn mt-3 btn-success">Зарегистрироваться</button>
-        {{ form_end(registrationForm) }}
+                    <br>
+                    <button type="submit" class="form-button">Зарегистрироваться</button>
+                    {{ form_end(registrationForm) }}
+                    <p class="message">Уже есть аккаунт? <a href="{{ path('app_login') }}">Войти</a></p>
+                </div>
+            </div>
+        </div>
+
     </div>
 {% endblock %}

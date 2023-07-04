@@ -2,11 +2,11 @@
 
 namespace App\Security;
 
-use App\Exception\BillingException;
 use App\Exception\BillingUnavailableException;
 use App\Service\BillingClient;
 use JsonException;
 use PHPUnit\Util\Exception;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -15,12 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 
@@ -30,11 +27,13 @@ class BillingAuthenticator extends AbstractLoginFormAuthenticator
     use TargetPathTrait;
 
     private BillingClient $billingClient;
+    private UrlGeneratorInterface $urlGenerator;
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator, BillingClient $billingClient)
+    public function __construct(UrlGeneratorInterface $urlGenerator, BillingClient $billingClient)
     {
+        $this->urlGenerator = $urlGenerator;
         $this->billingClient = $billingClient;
     }
 

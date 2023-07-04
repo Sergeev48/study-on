@@ -14,7 +14,7 @@ class AppFixtures extends Fixture
         $course_1 = new Course();
         $course_1
             ->setCode('Python-1')
-            ->setName('Python с нуля')
+            ->setTitle('Python с нуля')
             ->setDescription('На Python создают веб-приложения и нейросети, проводят научные вычисления и автоматизируют процессы. Вы научитесь программировать на востребованном языке с нуля, напишете Telegram-бота для турагентства и сможете начать карьеру в разработке.');
 
         $lesson = new Lesson();
@@ -41,7 +41,7 @@ class AppFixtures extends Fixture
         $course_2 = new Course();
         $course_2
             ->setCode('Java-1')
-            ->setName('Java-разработчик')
+            ->setTitle('Java-разработчик')
             ->setDescription('Вы научитесь писать код и создавать сайты на самом популярном языке программирования. Разработаете блог, добавите сильный проект в портфолио и станете Java-программистом, которому рады в любой студии разработки.');
 
         $lesson = new Lesson();
@@ -68,7 +68,7 @@ class AppFixtures extends Fixture
         $course_3 = new Course();
         $course_3
             ->setCode('SQL-1')
-            ->setName('SQL-разработчик')
+            ->setTitle('SQL-разработчик')
             ->setDescription('Вы освоите язык запросов SQL и его процедурное расширение PL/SQL. Научитесь собирать, обрабатывать и предоставлять данные для анализа, сможете визуализировать информацию и поймёте, как использовать и настраивать свои базы данных для различных задач.');
 
         $lesson = new Lesson();

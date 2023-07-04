@@ -21,8 +21,8 @@ class UserRegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Электронная почта',
                 'attr' => [
-                    'class' => 'form-control mb-3',
-                    'placeholder' => 'Введите вашу электронную почту...',
+                    'class' => 'form-control m-0 info',
+                    'placeholder' => 'Введите вашу электронную почту',
                 ],
                 'constraints' => [
                     new Email([
@@ -51,12 +51,12 @@ class UserRegistrationFormType extends AbstractType
                 'options' => ['attr' => ['class' => 'password-field']],
                 'required' => true,
                 'first_options'  => [
-                    'label' => 'Пароль',
+                    'label' => ' ',
                     'attr' =>
                         [
                             'autocomplete' => 'new-password',
-                            'class' => 'form-control mb-3',
-                            'placeholder' => 'Введите ваш пароль...'],
+                            'class' => 'form-control m-0 info ',
+                            'placeholder' => 'Введите ваш пароль'],
                     'constraints' => [
                         new NotBlank([
                             'message' => 'Пожалуйста, введите пароль',
@@ -70,12 +70,12 @@ class UserRegistrationFormType extends AbstractType
                     ]
                 ],
                 'second_options' => [
-                    'label' => 'Повторите пароль',
+                    'label' => ' ',
                     'attr' =>
                         [
                             'autocomplete' => 'new-password',
-                            'class' => 'form-control mb-3',
-                            'placeholder' => 'Повторите пароль...' ],
+                            'class' => 'form-control m-0 info',
+                            'placeholder' => 'Повторите пароль' ],
                 ]
             ])
         ;

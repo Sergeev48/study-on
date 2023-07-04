@@ -93,15 +93,16 @@ class SecurityController extends AbstractController
                 'password' => $password,
             ], JSON_THROW_ON_ERROR);
 
-
             try {
                 $response = $this->billingClient->register($credentials);
             } catch (BillingUnavailableException|JsonException $e) {
                 throw new Exception('Произошла ошибка во время регистрации: ' . $e->getMessage());
             }
-            if (isset($response['error']) && $error = $response['error']) {
-                $form->addError(new FormError($error));
-            } elseif (isset($response['token'])) {
+            if (isset($response['code'])) {
+                foreach ($response['errors'] as $error) {
+                    $form->addError(new FormError($error));
+                }
+            } else  {
                 $user = new User();
                 $user->setToken($response['token']);
                 $user->decodeToken();
